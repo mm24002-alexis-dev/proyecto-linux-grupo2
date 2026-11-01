@@ -1,0 +1,10 @@
+ # Archivos temporales 
+  *.tmp
+  *.log
+
+ # Archivos del sistema 
+  .Ds_Store 
+  Thumbs.db
+
+ # Archivos de configuracion personal 
+  .env
