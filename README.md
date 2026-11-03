@@ -1,0 +1,114 @@
+# Proyecto Linux - Grupo 2
+
+Proyecto final de **Introducción al Software Libre (ISL135)** – Universidad de El Salvador, Facultad Multidisciplinaria de Occidente, Ciclo II-2026.
+
+Implementación de un servidor Linux automatizado (`servidor-grupo2`) que integra administración del sistema, automatización con cron, control de versiones con Git/GitHub y contenedores Docker.
+
+**Tutora:** Ing. Graciela Albaluz Escalante Grijalva (GT01)
+
+## Integrantes
+
+| Carnet | Nombre |
+|--------|--------|
+| MM24002 | Alexis Jonathan Mazariego Mazariego |
+| QV22002 | Danilo Alejandro Quintana Vásquez |
+| BM25011 | Jesús Antonio Barahona Mejía |
+| FA24002 | Francisco Antonio Figueroa Amaya |
+
+## Estructura del proyecto
+
+```
+/proyecto/
+├── datos/      # Archivos de configuración (grupo: soporte)
+├── web/        # Archivos del sitio web (grupo: web)
+├── scripts/    # Scripts de automatización (reporte_sistema.sh)
+├── capturas/   # Evidencias del proyecto
+├── Dockerfile  # Imagen personalizada servidor-grupo2
+└── README.md
+```
+
+## Pasos de instalación y configuración
+
+### 1. Preparación del entorno servidor
+```bash
+sudo hostnamectl set-hostname servidor-grupo2
+sudo useradd -m -s /bin/bash adminsys && sudo usermod -aG sudo adminsys
+sudo useradd -m -s /bin/bash tecnico
+sudo useradd -m -s /bin/bash visitante
+sudo groupadd soporte && sudo groupadd web
+sudo usermod -aG soporte tecnico
+sudo usermod -aG web visitante
+sudo mkdir -p /proyecto/{datos,web,scripts,capturas}
+sudo chgrp soporte /proyecto/datos && sudo chgrp web /proyecto/web
+sudo chmod 2775 /proyecto/datos /proyecto/web   # setgid: los archivos heredan el grupo
+```
+
+### 2. Automatización y monitoreo
+- Script `/proyecto/scripts/reporte_sistema.sh`: muestra fecha/hora, hostname, usuarios conectados, espacio libre en disco, RAM disponible y contenedores Docker activos.
+- Tarea cron cada 30 minutos:
+```bash
+*/30 * * * * /proyecto/scripts/reporte_sistema.sh >> /var/log/proyecto/reporte_sistema.log 2>&1
+```
+
+### 3. Control de versiones
+```bash
+cd /proyecto
+git init
+git add .
+git commit -m "Primer commit: estructura inicial del proyecto"
+git branch -M main
+git remote add origin https://github.com/mm24002-alexis-dev/proyecto-linux-grupo2.git
+git push -u origin main
+```
+
+### 4. Docker
+```bash
+sudo apt update && sudo apt install -y docker.io
+sudo systemctl enable --now docker
+sudo usermod -aG docker adminsys
+sudo usermod -aG docker tecnico
+docker --version
+docker run hello-world
+docker ps -a
+```
+
+### 5. Servidor web containerizado (Nginx)
+```bash
+docker run -d --name nginx-web -p 8080:80 -v /proyecto/web:/usr/share/nginx/html nginx
+```
+Acceso: http://localhost:8080
+
+### 6. Docker avanzado (imagen personalizada)
+```bash
+docker build -t servidor-grupo2 /proyecto
+docker run -d --name servidor-personalizado -p 8081:80 servidor-grupo2
+```
+Acceso: http://localhost:8081
+
+### 7. Redes y volúmenes
+```bash
+docker network create red-proyecto
+docker run -d --name nginx-red --network red-proyecto -p 8082:80 nginx
+docker volume create volumen-web
+docker run -d --name nginx-volumen -p 8083:80 -v volumen-web:/usr/share/nginx/html nginx
+```
+
+### 8. Pruebas y verificación
+```bash
+docker run --rm --network red-proyecto alpine ping -c 4 nginx-red
+docker ps
+crontab -l
+git log --oneline
+```
+
+## Servicios y puertos
+
+| Puerto | Servicio |
+|--------|----------|
+| 8080 | Nginx oficial con /proyecto/web montado |
+| 8081 | Imagen personalizada servidor-grupo2 |
+| 8082 | Nginx conectado a red-proyecto |
+| 8083 | Nginx con volumen persistente volumen-web |
+
+## Tecnologías
+GNU/Linux (Ubuntu), Bash, Cron, Git, GitHub, Docker, Nginx, Alpine Linux.
