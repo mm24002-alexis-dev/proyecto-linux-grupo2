@@ -112,3 +112,17 @@ git log --oneline
 
 ## Tecnologías
 GNU/Linux (Ubuntu), Bash, Cron, Git, GitHub, Docker, Nginx, Alpine Linux.
+
+## 5. Implementación de servidor web Nginx mediante Docker
+
+En esta fase se implementó un servidor web utilizando la imagen oficial de Nginx disponible en Docker Hub.
+
+Primero se preparó una página web personalizada dentro del directorio `/proyecto/web/`, la cual contiene información del proyecto y del servidor.
+
+Posteriormente se ejecutó un contenedor Docker llamado `nginx-oficial`, utilizando el puerto 8080 del servidor Fedora para acceder al puerto 80 del contenedor. También se configuró un volumen compartido para que Nginx pudiera servir directamente los archivos almacenados en `/proyecto/web/`.
+
+Durante la configuración se presentó un error HTTP 403 Forbidden debido a las políticas de seguridad de SELinux. Para solucionarlo se utilizó la opción `:Z` en el montaje del volumen, permitiendo el acceso adecuado del contenedor sin desactivar SELinux.
+
+Finalmente se comprobó el funcionamiento mediante `curl`, se accedió a la página desde otro equipo de la red local y se revisaron los registros del contenedor mediante `docker logs`.
+
+**Resultado:** el servidor Nginx quedó funcionando correctamente y sirviendo la página personalizada a través del puerto 8080.
