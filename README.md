@@ -118,7 +118,21 @@ docker run -d --name servidor-personalizado -p 8081:80 servidor-grupo2
 ```
 Acceso: http://localhost:8081
 
-### 7. Redes y volúmenes
+### 7. Configuración de redes y volúmenes Docker
+
+En esta fase se implementó una red virtual personalizada y un volumen persistente para demostrar la comunicación entre contenedores y el almacenamiento independiente de los mismos.
+
+### 7.1. Creación de una red personalizada
+
+Primero se creó una red Docker denominada `red-proyecto`, utilizando el controlador `bridge`. Posteriormente se ejecutó un contenedor Nginx llamado `nginx-red` y se conectó a dicha red mediante el parámetro `--network`.
+
+Se configuró el puerto 8082 del servidor para acceder al puerto 80 del contenedor. Se comprobó la configuración mediante `docker network inspect red-proyecto` y se verificó que el servidor web respondiera correctamente mediante `curl`.
+
+### 7.2. Creación y configuración de un volumen
+
+Después se creó un volumen Docker denominado `volumen-web`, utilizando el controlador local. Este volumen se montó en el directorio `/usr/share/nginx/html` del contenedor Nginx.
+
+Se copió la página web personalizada al directorio montado y se comprobó que el contenido persistiera y se sirviera de forma correcta.
 ```bash
 docker network create red-proyecto
 docker run -d --name nginx-red --network red-proyecto -p 8082:80 nginx
