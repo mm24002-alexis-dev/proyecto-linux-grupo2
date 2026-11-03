@@ -94,10 +94,10 @@ Acceso: http://localhost:8080
 ### 6. Construcción de una imagen personalizada mediante Dockerfile
 En esta fase se desarrolló una imagen Docker personalizada utilizando como base la imagen oficial de Nginx.
 Primero se creó un archivo denominado Dockerfile dentro del directorio /proyecto/. En este archivo se definieron las instrucciones necesarias para construir el servidor web:
-# FROM nginx:latest: establece Nginx como imagen base.
-# COPY web/ /usr/share/nginx/html/: copia los archivos de la página web al directorio utilizado por Nginx.
-# EXPOSE 80: declara el puerto que utiliza el servidor web dentro del contenedor.
-# CMD ["nginx", "-g", "daemon off;"]: establece el comando para iniciar Nginx en primer plano.
+### FROM nginx:latest: establece Nginx como imagen base.
+### COPY web/ /usr/share/nginx/html/: copia los archivos de la página web al directorio utilizado por Nginx.
+### EXPOSE 80: declara el puerto que utiliza el servidor web dentro del contenedor.
+### CMD ["nginx", "-g", "daemon off;"]: establece el comando para iniciar Nginx en primer plano.
 
 Posteriormente se ejecutó el comando docker build -t servidor-grupo2 . para construir la imagen personalizada utilizando el directorio /proyecto/ como contexto de construcción.
 Una vez construida, se ejecutó un nuevo contenedor denominado nginx-personalizado, utilizando el puerto 8081 del servidor para acceder al puerto 80 del contenedor.
