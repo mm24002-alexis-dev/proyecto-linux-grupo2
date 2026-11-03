@@ -140,13 +140,72 @@ docker volume create volumen-web
 docker run -d --name nginx-volumen -p 8083:80 -v volumen-web:/usr/share/nginx/html nginx
 ```
 
-### 8. Pruebas y verificación
+### 8. Verificación de la comunicación entre contenedores y funcionamiento general
+
+En esta última fase se realizaron pruebas para comprobar la comunicación entre contenedores Docker y verificar el funcionamiento general de los servicios implementados durante el proyecto.
+
+### 8.1. Prueba de comunicación mediante Alpine
+
+Primero se ejecutó un contenedor temporal utilizando la imagen ligera de Alpine y se conectó a la red personalizada `red-proyecto`.
+
+Para comprobar la comunicación entre contenedores se ejecutó el siguiente comando:
+
 ```bash
-docker run --rm --network red-proyecto alpine ping -c 4 nginx-red
-docker ps
-crontab -l
-git log --oneline
+sudo docker run --rm \
+  --network red-proyecto \
+  alpine ping -c 4 nginx-red
+
 ```
+
+Con esta prueba se verificó que el contenedor Alpine podía localizar al contenedor Nginx mediante su nombre `nginx-red` y establecer comunicación dentro de la red Docker.
+
+La opción `--rm` permitió eliminar automáticamente el contenedor Alpine después de finalizar la prueba.
+
+### 8.2. Verificación de los servicios web
+
+Posteriormente se comprobó el estado de los contenedores mediante:
+
+```bash
+sudo docker ps
+
+```
+
+También se realizaron solicitudes HTTP a los cuatro servicios implementados:
+
+```bash
+curl -I http://localhost:8080
+curl -I http://localhost:8081
+curl -I http://localhost:8082
+curl -I http://localhost:8083
+
+```
+
+Los puertos utilizados corresponden a:
+
+* **8080:** servidor Nginx con montaje del directorio web del sistema.
+* **8081:** servidor Nginx construido mediante un Dockerfile personalizado.
+* **8082:** servidor Nginx conectado a la red personalizada `red-proyecto`.
+* **8083:** servidor Nginx utilizando el volumen persistente `volumen-web`.
+
+### 8.3. Verificación del monitoreo automático
+
+Finalmente se revisó la configuración de tareas programadas mediante:
+
+```bash
+sudo crontab -l
+
+```
+
+También se consultó el registro generado por el script de monitoreo:
+
+```bash
+sudo tail -n 10 /var/log/proyecto/reporte_sistema.log
+
+```
+
+Con estas comprobaciones se buscó verificar que el sistema ejecutara periódicamente el script `reporte_sistema.sh` y almacenara los reportes correspondientes.
+
+**Resultado:** esta fase permitió comprobar la comunicación interna entre contenedores mediante una red Docker, el funcionamiento de los servicios web en diferentes puertos y la integración del sistema de monitoreo automático. Con ello se completaron las pruebas de funcionamiento del proyecto.
 
 ## Servicios y puertos
 
