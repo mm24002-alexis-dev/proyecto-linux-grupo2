@@ -78,7 +78,7 @@ En esta fase se implementó un servidor web utilizando la imagen oficial de Ngin
 
 Primero se preparó una página web personalizada dentro del directorio `/proyecto/web/`, la cual contiene información del proyecto y del servidor.
 
-Posteriormente se ejecutó un contenedor Docker llamado `nginx-oficial`, utilizando el puerto 8080 del servidor Fedora para acceder al puerto 80 del contenedor. También se configuró un volumen compartido para que Nginx pudiera servir directamente los archivos almacenados en `/proyecto/web/`.
+Posteriormente se ejecutó un contenedor Docker llamado `nginx-oficial`, utilizando el puerto 8080 del servidor para acceder al puerto 80 del contenedor. También se configuró un volumen compartido para que Nginx pudiera servir directamente los archivos almacenados en `/proyecto/web/`.
 
 Durante la configuración se presentó un error HTTP 403 Forbidden debido a las políticas de seguridad de SELinux. Para solucionarlo se utilizó la opción `:Z` en el montaje del volumen, permitiendo el acceso adecuado del contenedor sin desactivar SELinux.
 
@@ -87,7 +87,7 @@ Finalmente se comprobó el funcionamiento mediante `curl`, se accedió a la pág
 **Resultado:** el servidor Nginx quedó funcionando correctamente y sirviendo la página personalizada a través del puerto 8080.****
 
 ```bash
-docker run -d --name nginx-web -p 8080:80 -v /proyecto/web:/usr/share/nginx/html nginx
+docker run -d --name nginx-oficial -p 8080:80 -v /proyecto/web:/usr/share/nginx/html:ro nginx:latest
 ```
 Acceso: http://localhost:8080
 
@@ -113,8 +113,9 @@ Finalmente se verificó su funcionamiento mediante los comandos `docker ps` y `c
 **Resultado:** se logró construir y ejecutar una imagen Docker personalizada, manteniendo simultáneamente el servidor oficial y el personalizado en puertos diferentes.
 
 ```bash
-docker build -t servidor-grupo2 /proyecto
-docker run -d --name servidor-personalizado -p 8081:80 servidor-grupo2
+cd /proyecto
+docker build -t servidor-grupo2 .
+docker run -d --name nginx-personalizado -p 8081:80 servidor-grupo2
 ```
 Acceso: http://localhost:8081
 
